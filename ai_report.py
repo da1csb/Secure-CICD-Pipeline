@@ -36,7 +36,7 @@ def generate_ai_report(findings):
     findings_text = json.dumps(findings, indent=2)
 
     message = client.messages.create(
-        model="claude-sonnet-4-20250514",
+        model="claude-opus-4-6",
         max_tokens=1000,
         messages=[
             {
