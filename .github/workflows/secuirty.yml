@@ -45,12 +45,9 @@ jobs:
           path: trivy-results.json
         continue-on-error: true
 
-      - name: Set up Python for AI report
-        run: pip install anthropic
-
       - name: Run AI security report
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python ai_report.py
 
       - name: Upload AI report
