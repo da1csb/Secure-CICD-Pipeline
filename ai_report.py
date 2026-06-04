@@ -29,7 +29,10 @@ def generate_ai_report(findings):
     if not findings:
         return "No vulnerabilities found in this scan."
 
+    import time
     api_key = os.environ.get('GEMINI_API_KEY')
+    print(f"API key present: {bool(api_key)}")
+    
     findings_text = json.dumps(findings, indent=2)
 
     prompt = f"""You are a security engineer reviewing vulnerability scan results.
@@ -60,9 +63,19 @@ Keep each explanation concise and actionable. Format as markdown."""
         method='POST'
     )
 
-    with urllib.request.urlopen(req) as response:
-        result = json.loads(response.read().decode('utf-8'))
-        return result['candidates'][0]['content']['parts'][0]['text']
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req) as response:
+                result = json.loads(response.read().decode('utf-8'))
+                return result['candidates'][0]['content']['parts'][0]['text']
+        except urllib.error.HTTPError as e:
+            if e.code == 429:
+                print(f"Rate limited, waiting 30 seconds (attempt {attempt + 1}/3)...")
+                time.sleep(30)
+            else:
+                raise
+    
+    return "Rate limit exceeded after 3 attempts. Please retry the pipeline."
 
 def main():
     print("Loading Trivy scan results...")
