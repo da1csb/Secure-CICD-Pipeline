@@ -70,8 +70,8 @@ Keep each explanation concise and actionable. Format as markdown."""
                 return result['candidates'][0]['content']['parts'][0]['text']
         except urllib.error.HTTPError as e:
             if e.code == 429:
-                print(f"Rate limited, waiting 30 seconds (attempt {attempt + 1}/3)...")
-                time.sleep(30)
+                print(f"Rate limited, waiting 60 seconds (attempt {attempt + 1}/3)...")
+                time.sleep(60)
             else:
                 raise
     
