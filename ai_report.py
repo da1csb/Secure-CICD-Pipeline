@@ -15,12 +15,12 @@ def extract_findings(trivy_data):
     
     for result in results:
         vulnerabilities = result.get('Vulnerabilities', [])
-        for vuln in vulnerabilities[:5]:
+        for vuln in vulnerabilities[:3]:
             findings.append({
                 'id': vuln.get('VulnerabilityID', 'Unknown'),
                 'package': vuln.get('PkgName', 'Unknown'),
                 'severity': vuln.get('Severity', 'Unknown'),
-                'description': vuln.get('Description', 'No description')[:200],
+                'description': vuln.get('Description', 'No description')[:100],
                 'fixed_version': vuln.get('FixedVersion', 'No fix available')
             })
     return findings
