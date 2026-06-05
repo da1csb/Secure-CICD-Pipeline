@@ -31,22 +31,11 @@ def generate_ai_report(findings):
 
     import time
     api_key = os.environ.get('GEMINI_API_KEY')
-    print(f"API key present: {bool(api_key)}")
     
-    findings_text = json.dumps(findings, indent=2)
+    # Send just the package names and severities — much smaller prompt
+    summary = "\n".join([f"- {f['package']} ({f['severity']}): {f['id']}" for f in findings])
 
-    prompt = f"""You are a security engineer reviewing vulnerability scan results.
-
-Here are the findings from a Trivy scan of a Python Flask application:
-
-{findings_text}
-
-For each finding provide:
-1. What the vulnerability means in plain English
-2. The actual risk to this application
-3. Exactly how to fix it
-
-Keep each explanation concise and actionable. Format as markdown."""
+    prompt = f"List these security vulnerabilities and one fix for each:\n{summary}"
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
     
@@ -75,7 +64,7 @@ Keep each explanation concise and actionable. Format as markdown."""
             else:
                 raise
     
-    return "Rate limit exceeded after 3 attempts. Please retry the pipeline."
+    return "Rate limit exceeded — re-run pipeline after 60 seconds."
 
 def main():
     print("Loading Trivy scan results...")
